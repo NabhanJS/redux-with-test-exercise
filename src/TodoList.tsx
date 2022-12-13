@@ -1,44 +1,38 @@
 import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { FaArrowDown, FaArrowUp } from 'react-icons/fa';
+import { useDispatch, useSelector  } from 'react-redux'
+import { addTodo, removeTodo, sortTodos } from './store/todoSlice';
 
-type Todo = {
+type allTodo = {
     id: string,
-    text: string
+    title: string
 }
 
 const TodoList = () => {
-    const [todos, setTodos] = useState<Todo[]>([]);
-    const [newTodoText, setNewTodoText] = useState<string>("");
-    const [filterDescending, setFilterDescending] = useState<boolean>(false);
+    const [title, setTitle ] = useState('')
+    const dispatch = useDispatch();
+    const todos = useSelector((state: any) => state.todoReducer.todos);
 
-    const addTodo = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        setTodos([...todos, { id: uuidv4(), text: newTodoText }]);
-        setNewTodoText("");
+    const handleSubmit = (e: any) => {
+        e.preventDefault()
+        dispatch(addTodo(title))
     }
 
-    const removeTodo = (id: string) => {
-        setTodos(todos.filter(todo => todo.id !== id));
-    }
+    return ( <div>
+                <form onSubmit={handleSubmit}>
+                    <input onChange={(e) => setTitle(e.target.value)} value={title}/>
+                    
+                    <button type="submit" disabled={title.length === 0}>Lägg till</button>
+                </form>
 
-    const sortTodos = (desc: boolean) => {
-        setTodos(todos.sort((a, b) => (desc ? 1 : -1) * a.text.localeCompare(b.text)));
-    }
+                {/* <h2>Todo<button onClick={() => { setFilterDescending(!filterDescending); sortTodos(filterDescending) }}>{filterDescending ? <FaArrowUp /> : <FaArrowDown />}</button></h2> */}
 
-    return (
-        <>
-            <form onSubmit={(addTodo)}>
-                <input placeholder="Skriv en todo..." onChange={(event) => setNewTodoText(event.target.value)} value={newTodoText}></input>
-                <button type="submit" disabled={newTodoText.length === 0}>Lägg till</button>
-            </form>
-            <h2>Todo<button onClick={() => { setFilterDescending(!filterDescending); sortTodos(filterDescending) }}>{filterDescending ? <FaArrowUp /> : <FaArrowDown />}</button></h2>
-
-            {todos.length ?
-                <ul>
-                    {todos.map(todo => <li key={todo.id}>{todo.text} <button onClick={() => removeTodo(todo.id)}>Ta bort</button></li>)}
-                </ul> : <p>Du har inga todos</p>}
-        </>
+                {todos.length ?
+                    <ul>
+                        {todos.map((todo: any) => <li key={todo.title}>{todo.title} <button onClick={() => dispatch(removeTodo(todo.id))}>Ta bort</button></li>)}
+                    </ul> : <p>Du har inga todos</p>}
+            </div>
     )
 }
 
