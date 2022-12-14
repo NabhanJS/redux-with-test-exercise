@@ -1,20 +1,27 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { v4 as uuidv4 } from 'uuid';
 
+type NewTodo = {
+  id: string
+  title: string
+}
+
+type IsInitial = {
+  todos: NewTodo[]
+}
+
+const initialState: IsInitial = {
+  todos:[]
+}
+
 const todoSlice = createSlice({
   name: 'todos',
-  initialState: { 
-    todos: [
-        {
-            id: uuidv4(),
-            title: "do the homework"
-        }
-    ]
-   },
+  initialState ,
 
   reducers: {
-    addTodo: (state, action) => {
-        state.todos.push({id:  uuidv4(), title: action.payload})
+    addTodo: (state, action: PayloadAction<string> ) => {
+      const newTodo = { id: uuidv4(), title: action.payload };
+      state.todos = [...state.todos, newTodo]
       },
       
       removeTodo(state, action) {
@@ -22,7 +29,7 @@ const todoSlice = createSlice({
     },
 
     sortTodos(state, action) {
-      
+      state.todos = state.todos.sort()
     }
   }
 })
