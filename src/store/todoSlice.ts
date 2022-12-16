@@ -8,10 +8,18 @@ type NewTodo = {
 
 type IsInitial = {
   todos: NewTodo[]
+  sortData: boolean
+  sortName: string,
+  sortEmail: string
+  sortPassword: string
 }
 
 const initialState: IsInitial = {
-  todos:[]
+  todos:[],
+  sortData: false,
+  sortName: "Nabhan",
+  sortEmail: "nabhan@yahoo.com",
+  sortPassword: "123",
 }
 
 const todoSlice = createSlice({
@@ -19,17 +27,18 @@ const todoSlice = createSlice({
   initialState ,
 
   reducers: {
-    addTodo: (state, action: PayloadAction<string> ) => {
+    addTodo: (state, action:PayloadAction<string> ) => {
       const newTodo = { id: uuidv4(), title: action.payload };
       state.todos = [...state.todos, newTodo]
       },
-      
+
       removeTodo(state, action) {
       state.todos = state.todos.filter((todo) => todo.id !== action.payload)
     },
 
     sortTodos(state, action) {
-      state.todos = state.todos.sort()
+      state.sortData = action.payload
+      state.todos = state.todos.sort((a, b) => (action.payload ? 1 : -1) * a.title.localeCompare(b.title, "sv"))
     }
   }
 })
